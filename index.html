@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis Interactivo: Regulación de Seguridad de ATMs en Paraguay</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: Se ha diseñado una estructura de aplicación temática y no lineal, similar a un panel de control. En lugar de replicar la estructura secuencial del informe, la información se agrupa en secciones lógicas e interactivas (Ecosistema, Obligaciones, Controles, Sanciones, Recomendaciones). Esta arquitectura permite a los usuarios (ej. oficiales de cumplimiento, gerentes de TI) acceder directamente a la información de su interés, facilitando una comprensión más rápida y una mejor retención. El flujo del usuario es flexible, guiado por una barra de navegación fija, lo que transforma un análisis legal denso en una herramienta de consulta ágil y eficiente. -->
+    <!-- Visualization & Content Choices: 1. Ecosistema Regulatorio: Informe -> Organizar -> Diagrama interactivo (HTML/CSS/JS) -> Clic para ver detalles -> Justificación: Visualiza la jerarquía de poder de forma más clara que el texto. 2. Controles Técnicos: Informe (Tabla 1) -> Informar/Organizar -> Componente de pestañas y gráfico de dona (Chart.js) -> Clic en pestañas para filtrar controles -> Justificación: Desglosa la densa tabla de controles en partes manejables y el gráfico ofrece un resumen visual de las áreas de enfoque. 3. Régimen Sancionatorio: Informe (Tabla 2) -> Comparar/Informar -> Gráfico de barras (Chart.js) y tarjetas interactivas -> Hover/clic para detalles de sanciones -> Justificación: El gráfico cuantifica el riesgo financiero de manera impactante y las tarjetas detallan las consecuencias de forma concisa. 4. Recomendaciones: Informe -> Organizar -> Acordeón (HTML/JS) -> Clic para expandir -> Justificación: Presenta las acciones estratégicas de forma limpia y organizada, sin abrumar al usuario. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF7;
+            color: #333;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .section-card {
+            background-color: #FFFFFF;
+            border: 1px solid #EAEAEA;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            transition: all 0.3s ease-in-out;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link:hover {
+            color: #A0522D;
+        }
+        .nav-link.active {
+            color: #A0522D;
+            border-bottom-color: #A0522D;
+        }
+        .tab-button.active {
+            background-color: #8B4513;
+            color: #FFFFFF;
+        }
+        .tab-button {
+             background-color: #F5F5F5;
+             color: #333;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 border-b border-gray-200">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-gray-800">Regulación ATM Paraguay</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#ecosistema" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 border-b-2 border-transparent">Ecosistema</a>
+                        <a href="#obligaciones" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 border-b-2 border-transparent">Obligaciones</a>
+                        <a href="#controles" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 border-b-2 border-transparent">Controles Técnicos</a>
+                        <a href="#sanciones" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 border-b-2 border-transparent">Sanciones</a>
+                        <a href="#recomendaciones" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 border-b-2 border-transparent">Recomendaciones</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        
+        <section id="hero" class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 mb-4">Análisis Interactivo del Marco Regulatorio de Seguridad para ATMs</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600">Una exploración de la normativa paraguaya sobre la gestión de información de efectivo en cajeros automáticos, enfocada en la gestión de riesgos y la debida diligencia en ciberseguridad.</p>
+        </section>
+
+        <div class="space-y-16">
+
+            <section id="ecosistema" class="section-card p-6 md:p-8">
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Ecosistema Regulatorio</h3>
+                <p class="text-gray-600 mb-6">La regulación de la seguridad de ATMs en Paraguay es una estructura jerárquica. Interactúe con cada componente para entender su rol fundamental en la definición y supervisión de las normativas de seguridad.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+                    <div class="regulator-card p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-amber-50 transition" data-id="bcp">
+                        <span class="text-4xl">🏛️</span>
+                        <h4 class="font-semibold mt-2">Banco Central (BCP)</h4>
+                        <p class="text-sm text-gray-500">Autoridad Rectora</p>
+                    </div>
+                    <div class="regulator-card p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-amber-50 transition" data-id="sb">
+                        <span class="text-4xl">🔍</span>
+                        <h4 class="font-semibold mt-2">Superintendencia (SB)</h4>
+                        <p class="text-sm text-gray-500">Brazo de Supervisión</p>
+                    </div>
+                    <div class="regulator-card p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-amber-50 transition" data-id="leyes">
+                        <span class="text-4xl">⚖️</span>
+                        <h4 class="font-semibold mt-2">Leyes Fundamentales</h4>
+                        <p class="text-sm text-gray-500">Pilares Legislativos</p>
+                    </div>
+                    <div class="regulator-card p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-amber-50 transition" data-id="mitic">
+                        <span class="text-4xl">💻</span>
+                        <h4 class="font-semibold mt-2">MITIC</h4>
+                        <p class="text-sm text-gray-500">Estrategia Nacional</p>
+                    </div>
+                </div>
+                <div id="ecosistema-info" class="mt-6 p-4 bg-amber-50/50 border-l-4 border-amber-600 rounded-r-lg min-h-[100px]">
+                    <p class="text-gray-700">Seleccione un componente para ver su descripción.</p>
+                </div>
+            </section>
+
+            <section id="obligaciones" class="section-card p-6 md:p-8">
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Obligaciones Clave: Más Allá de la Prescripción</h3>
+                <p class="text-gray-600 mb-6">La normativa paraguaya no detalla tecnologías específicas, sino que se basa en dos principios fundamentales que exigen una gestión proactiva y actualizada de la seguridad por parte de las entidades financieras.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-6 bg-gray-50 rounded-lg border">
+                        <h4 class="font-bold text-lg text-gray-800 mb-2">"Seguridad de Alta Tecnología"</h4>
+                        <p class="text-gray-600">Esta cláusula del Manual de Seguridad es un estándar dinámico. Obliga a las entidades a adoptar controles considerados robustos según las mejores prácticas internacionales y las normativas más recientes del BCP, evolucionando constantemente con la tecnología y las amenazas.</p>
+                    </div>
+                    <div class="p-6 bg-gray-50 rounded-lg border">
+                        <h4 class="font-bold text-lg text-gray-800 mb-2">Gestión de Riesgos por ATM</h4>
+                        <p class="text-gray-600">Es la pieza central de la supervisión. Las entidades deben realizar y documentar un análisis de riesgo para cada ATM, incluyendo amenazas lógicas. Este análisis justifica los controles implementados y es la base para cualquier auditoría de la Superintendencia de Bancos.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="controles" class="section-card p-6 md:p-8">
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Matriz de Controles Técnicos de Seguridad</h3>
+                <p class="text-gray-600 mb-6">Aunque no existen reglas explícitas, el estándar de diligencia esperado por el BCP puede inferirse de normativas análogas. Estos son los controles técnicos que toda entidad debe considerar para proteger la información operativa de sus ATMs.</p>
+                <div class="flex flex-col lg:flex-row gap-8">
+                    <div class="lg:w-1/2">
+                         <div class="mb-4 flex flex-wrap gap-2">
+                            <button class="tab-button text-sm font-medium py-2 px-4 rounded-full active" data-tab="reposo">Datos en Reposo</button>
+                            <button class="tab-button text-sm font-medium py-2 px-4 rounded-full" data-tab="acceso">Control de Acceso</button>
+                            <button class="tab-button text-sm font-medium py-2 px-4 rounded-full" data-tab="transito">Datos en Tránsito</button>
+                            <button class="tab-button text-sm font-medium py-2 px-4 rounded-full" data-tab="vulnerabilidades">Vulnerabilidades</button>
+                            <button class="tab-button text-sm font-medium py-2 px-4 rounded-full" data-tab="monitoreo">Monitoreo</button>
+                        </div>
+                        <div id="control-details" class="bg-gray-50 p-4 rounded-lg border min-h-[250px]">
+                        </div>
+                    </div>
+                    <div class="lg:w-1/2 flex items-center justify-center">
+                        <div class="chart-container">
+                            <canvas id="controlsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="sanciones" class="section-card p-6 md:p-8">
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Régimen Sancionatorio: Consecuencias del Incumplimiento</h3>
+                <p class="text-gray-600 mb-6">El incumplimiento de las obligaciones de seguridad no es una mera deficiencia técnica, sino una infracción regulatoria con severas consecuencias financieras y profesionales para la entidad y su alta gerencia.</p>
+                <div class="flex flex-col lg:flex-row gap-8 items-center">
+                    <div class="lg:w-1/2 w-full">
+                        <div class="chart-container h-80 md:h-96">
+                             <canvas id="sanctionsChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="lg:w-1/2 w-full space-y-4">
+                        <div class="p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg">
+                            <h4 class="font-semibold text-red-800">Sanciones a la Entidad</h4>
+                            <p class="text-red-700">Multas de 101 a 5,000 salarios mínimos, suspensión de operaciones e incluso revocación de la licencia.</p>
+                        </div>
+                        <div class="p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg">
+                            <h4 class="font-semibold text-red-800">Sanciones a Directivos</h4>
+                            <p class="text-red-700">Multas de hasta 500 salarios mínimos y remoción del cargo con inhabilitación profesional de 3 a 10 años.</p>
+                        </div>
+                         <div class="p-4 bg-gray-100 border-l-4 border-gray-500 rounded-r-lg">
+                            <h4 class="font-semibold text-gray-800">Responsabilidad de la Alta Gerencia</h4>
+                            <p class="text-gray-700">Los directores son responsables a menos que demuestren oposición escrita y fehaciente a prácticas inseguras, exigiendo una supervisión activa y documentada.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="recomendaciones" class="section-card p-6 md:p-8">
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Recomendaciones Estratégicas de Cumplimiento</h3>
+                <p class="text-gray-600 mb-6">Para navegar este entorno regulatorio y mitigar riesgos, se recomienda un programa formal de cumplimiento y gobernanza. Explore las acciones clave para construir una defensa robusta y sostenible.</p>
+                <div id="accordion-container" class="space-y-3">
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t mt-16">
+        <div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-gray-500">
+            <p>&copy; 2025 Análisis Regulatorio Interactivo. Contenido basado en el marco legal vigente en Paraguay.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const data = {
+                ecosistema: {
+                    bcp: {
+                        title: "Banco Central del Paraguay (BCP)",
+                        text: "Es la autoridad máxima. Su ley orgánica le faculta para dictar normativas que aseguren la estabilidad y eficacia del sistema financiero, incluyendo la imposición de requisitos de seguridad cibernética."
+                    },
+                    sb: {
+                        title: "Superintendencia de Bancos (SB)",
+                        text: "Actúa como el órgano técnico de supervisión. Evalúa la calidad y pertinencia de los análisis de riesgo de cada ATM, convirtiéndose en el intérprete práctico de las normativas del BCP."
+                    },
+                    leyes: {
+                        title: "Leyes Fundamentales",
+                        text: "La Ley N° 861/96 (General de Bancos) y la Ley N° 489/95 (Orgánica del BCP) establecen la obligación general de operar de forma prudente, gestionar riesgos y definen el régimen sancionatorio que da fuerza a las resoluciones del BCP."
+                    },
+                    mitic: {
+                        title: "Ministerio de Tecnologías (MITIC)",
+                        text: "Aunque no regula directamente al sector financiero, su Plan Nacional de Ciberseguridad establece el marco general para infraestructuras críticas, influyendo indirectamente en los estándares esperados por el BCP."
+                    }
+                },
+                controles: {
+                    reposo: {
+                        title: "Datos en Reposo",
+                        req: "Uso de cifrado para datos en reposo (inferido de Reglamento PISP).",
+                        control: "Implementar cifrado de disco completo (FDE) en ATMs y cifrado a nivel de base de datos (TDE) en servidores centrales.",
+                        evidencia: "Documentación de configuración de FDE/TDE, política de gestión de claves de cifrado."
+                    },
+                    acceso: {
+                        title: "Control de Acceso",
+                        req: "Políticas de control de acceso basadas en mínimo privilegio (inferido de Reglamento PISP).",
+                        control: "Implementar sistemas IAM, asignar roles específicos y exigir autenticación multifactor (MFA) para accesos administrativos.",
+                        evidencia: "Matriz de roles y permisos (RACI), logs de auditoría de acceso, configuración de MFA."
+                    },
+                    transito: {
+                        title: "Datos en Tránsito",
+                        req: "Uso de cifrado para datos en tránsito (inferido de Reglamento PISP).",
+                        control: "Configurar todas las comunicaciones ATM-Host para usar exclusivamente TLS 1.2 o superior con suites de cifrado robustas.",
+                        evidencia: "Certificados digitales válidos, configuración de red/firewall, resultados de escaneos de TLS."
+                    },
+                    vulnerabilidades: {
+                        title: "Gestión de Vulnerabilidades",
+                        req: "Procedimiento de Gestión de vulnerabilidades (inferido de Reglamento PISP).",
+                        control: "Establecer un programa de escaneo periódico y un proceso formal de gestión de parches con SLAs definidos.",
+                        evidencia: "Reportes de escaneos, registros de aplicación de parches, política de gestión de vulnerabilidades."
+                    },
+                    monitoreo: {
+                        title: "Monitoreo y Respuesta",
+                        req: "Sistemas de detección y respuesta a amenazas (inferido de Reglamento PISP).",
+                        control: "Integrar logs en una plataforma SIEM, definir alertas para actividades sospechosas y establecer un plan de respuesta a incidentes.",
+                        evidencia: "Arquitectura del SIEM, reglas de correlación, plan de respuesta a incidentes documentado y probado."
+                    }
+                },
+                recomendaciones: [
+                    {
+                        title: "Actualización de Políticas y Procedimientos",
+                        content: "Revisar y actualizar la Política de Seguridad de la Información para incluir un capítulo específico sobre la seguridad de los sistemas de ATMs, clasificando la información operativa como 'Confidencial' o 'Crítica' y definiendo los requisitos mínimos de seguridad."
+                    },
+                    {
+                        title: "Ciclo de Vida de Gestión de Riesgos para ATMs",
+                        content: "Establecer un procedimiento formal para realizar el 'análisis de riesgo' exigido. Este proceso debe ejecutarse para cada nueva instalación y repetirse periódicamente, generando un documento formal aprobado por la gerencia."
+                    },
+                    {
+                        title: "Designación de Roles y Responsabilidades",
+                        content: "Definir formalmente quién es el 'propietario del riesgo' (ej. Gerencia de Canales), el 'custodio de la información' (ej. Gerencia de TI) y el responsable de la supervisión (ej. CISO)."
+                    },
+                    {
+                        title: "Programa de Auditorías Periódicas",
+                        content: "Planificar y ejecutar auditorías de seguridad internas y externas sobre la red de ATMs con una frecuencia definida. Los resultados deben ser presentados a la alta gerencia y al directorio."
+                    },
+                    {
+                        title: "Gobernanza y Supervisión del Directorio",
+                        content: "Asegurar que el riesgo de ciberseguridad de la red de ATMs sea un punto regular en la agenda del comité de riesgos y/o del directorio. Las decisiones, inversiones y aceptación de riesgos deben quedar documentadas en actas."
+                    }
+                ]
+            };
+
+            const ecosistemaInfo = document.getElementById('ecosistema-info');
+            document.querySelectorAll('.regulator-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const id = card.dataset.id;
+                    const info = data.ecosistema[id];
+                    ecosistemaInfo.innerHTML = `<h5 class="font-bold text-gray-800">${info.title}</h5><p class="text-gray-700">${info.text}</p>`;
+                });
+            });
+
+            const controlDetails = document.getElementById('control-details');
+            const tabButtons = document.querySelectorAll('.tab-button');
+            function updateControlTab(tabId) {
+                const info = data.controles[tabId];
+                controlDetails.innerHTML = `
+                    <h5 class="font-bold text-lg mb-2">${info.title}</h5>
+                    <div class="space-y-3 text-sm">
+                        <p><strong class="font-semibold text-gray-700">Requisito Inferido:</strong> ${info.req}</p>
+                        <p><strong class="font-semibold text-gray-700">Control Técnico Específico:</strong> ${info.control}</p>
+                        <p><strong class="font-semibold text-gray-700">Evidencia de Cumplimiento:</strong> ${info.evidencia}</p>
+                    </div>`;
+                tabButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabId);
+                });
+            }
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => updateControlTab(button.dataset.tab));
+            });
+            updateControlTab('reposo');
+
+            const accordionContainer = document.getElementById('accordion-container');
+            data.recomendaciones.forEach((item, index) => {
+                const accordionItem = document.createElement('div');
+                accordionItem.className = 'border border-gray-200 rounded-lg';
+                accordionItem.innerHTML = `
+                    <button class="accordion-header w-full flex justify-between items-center p-4 text-left font-semibold text-gray-800 hover:bg-gray-50">
+                        <span>${item.title}</span>
+                        <span class="accordion-icon transform transition-transform text-amber-700">▼</span>
+                    </button>
+                    <div class="accordion-content overflow-hidden max-h-0 transition-all duration-500 ease-in-out">
+                        <p class="p-4 pt-0 text-gray-600">${item.content}</p>
+                    </div>
+                `;
+                accordionContainer.appendChild(accordionItem);
+            });
+            document.querySelectorAll('.accordion-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    const icon = header.querySelector('.accordion-icon');
+                    header.parentElement.parentElement.querySelectorAll('.accordion-content').forEach(c => {
+                        if (c !== content) {
+                            c.style.maxHeight = null;
+                            c.previousElementSibling.querySelector('.accordion-icon').classList.remove('rotate-180');
+                        }
+                    });
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        icon.classList.remove('rotate-180');
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        icon.classList.add('rotate-180');
+                    }
+                });
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 80) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('href').substring(1) === current);
+                });
+            });
+
+            const controlsCtx = document.getElementById('controlsChart').getContext('2d');
+            new Chart(controlsCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Datos en Reposo', 'Control de Acceso', 'Datos en Tránsito', 'Vulnerabilidades', 'Monitoreo y Respuesta'],
+                    datasets: [{
+                        label: 'Dominios de Control',
+                        data: [20, 20, 20, 20, 20],
+                        backgroundColor: ['#D2B48C', '#BC8F8F', '#F4A460', '#CD853F', '#8B4513'],
+                        borderColor: '#FDFBF7',
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                boxWidth: 12,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Distribución de Dominios de Control de Seguridad',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            padding: {
+                                bottom: 10
+                            }
+                        }
+                    }
+                }
+            });
+
+            const sanctionsCtx = document.getElementById('sanctionsChart').getContext('2d');
+            new Chart(sanctionsCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Multa Mín. Entidad', 'Multa Máx. Entidad', 'Multa Máx. Directivos'],
+                    datasets: [{
+                        label: 'Salarios Mínimos Mensuales',
+                        data: [101, 5000, 500],
+                        backgroundColor: ['#F4A460', '#8B4513', '#BC8F8F'],
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Monto en Salarios Mínimos'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Rango de Sanciones Económicas Potenciales',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                             padding: {
+                                bottom: 10
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
